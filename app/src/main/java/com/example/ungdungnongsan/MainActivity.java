@@ -25,6 +25,9 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.text.TextWatcher;
 import android.text.Editable;
+import android.content.SharedPreferences;
+import android.app.AlertDialog;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		etSearch = findViewById(R.id.etSearch);
+		ImageView ivUserIcon = findViewById(R.id.ivUserIcon);
+		ivUserIcon.setOnClickListener(v -> {
+			SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+			String email = prefs.getString("email", "Không có dữ liệu");
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+			builder.setTitle("Thông tin người dùng");
+			builder.setMessage("Email: " + email);
+			builder.setPositiveButton("OK", null);
+			builder.show();
+		});
+
 		etSearch.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {

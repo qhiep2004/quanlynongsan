@@ -1,6 +1,7 @@
 package com.example.ungdungnongsan;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,6 +53,13 @@ public class LoginActivity extends AppCompatActivity {
 
 						if (email.equals(dbEmail) && password.equals(dbPassword)) {
 							isValid = true;
+
+
+							SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+							SharedPreferences.Editor editor = prefs.edit();
+							editor.putString("email", dbEmail);
+							editor.apply();
+
 							break;
 						}
 					}
