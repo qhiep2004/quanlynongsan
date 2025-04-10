@@ -59,7 +59,7 @@
                 android:id="@+id/tvOriginalPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="100.000đ"
+                android:text=""
                 android:textSize="12sp"
                 android:textColor="#757575"
                 />

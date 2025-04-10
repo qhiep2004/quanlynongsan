@@ -46,13 +46,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 		holder.tvOriginalPrice.setPaintFlags(holder.tvOriginalPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
 		holder.itemView.setOnClickListener(v -> {
 			Intent intent = new Intent(context, ProductDetailActivity.class);
-			intent.putExtra("name", product.getName());
-			intent.putExtra("price", product.getPrice());
-			intent.putExtra("imageUrl", product.getImageUrl());
-			intent.putExtra("description", product.getDescription());
-			intent.putExtra("origin", product.getOrigin());
-			intent.putExtra("ingredients", product.getIngredients());
+			intent.putExtra("product", product);
 			context.startActivity(intent);
+
 		});
 
 

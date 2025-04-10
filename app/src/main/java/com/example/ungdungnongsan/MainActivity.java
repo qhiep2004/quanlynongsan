@@ -28,7 +28,8 @@ import android.text.Editable;
 import android.content.SharedPreferences;
 import android.app.AlertDialog;
 import android.widget.ImageView;
-
+import android.content.Intent;
+import android.app.AlertDialog;
 public class MainActivity extends AppCompatActivity {
 
 	private RecyclerView rvGroupProducts;
@@ -50,13 +51,39 @@ public class MainActivity extends AppCompatActivity {
 		ivUserIcon.setOnClickListener(v -> {
 			SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
 			String email = prefs.getString("email", "Không có dữ liệu");
+			String name = prefs.getString("name", "Không có dữ liệu");
+			String phone = prefs.getString("phone", "Không có dữ liệu");
+			String address = prefs.getString("address", "Không có dữ liệu");
+
+			String message = "Email: " + email + "\n"
+					                 + "Họ tên: " + name + "\n"
+					                 + "SĐT: " + phone + "\n"
+					                 + "Địa chỉ: " + address;
+
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 			builder.setTitle("Thông tin người dùng");
-			builder.setMessage("Email: " + email);
+			builder.setMessage(message);
 			builder.setPositiveButton("OK", null);
+			builder.setNegativeButton("Chỉnh sửa", (dialog, which) -> {
+				startActivity(new android.content.Intent(MainActivity.this, EditProfileActivity.class));
+			});
+			builder.setNeutralButton("Đăng xuất", (dialog, which) -> {
+				SharedPreferences.Editor editor = prefs.edit();
+				editor.clear();
+				editor.apply();
+
+				Toast.makeText(MainActivity.this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+
+
+				Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa ngăn xếp Activity
+				startActivity(intent);
+				finish();
+			});
 			builder.show();
 		});
+
 
 		etSearch.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -140,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
 
 						if (name != null && imageUrl != null && price != null) {
 							Product product = new Product(name, imageUrl, price, description, origin, ingredients);
+							product.setKey(idSnapshot.getKey());
+							product.setCategory(groupName);
 							productList.add(product);
 							Log.d("MainActivity", "Đã thêm sản phẩm: " + name);
 						} else {

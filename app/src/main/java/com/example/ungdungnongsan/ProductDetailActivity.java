@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 
@@ -17,6 +18,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_detail);
 
+
+		Toolbar toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setTitle("");
+
 		tvName = findViewById(R.id.tvName);
 		tvPrice = findViewById(R.id.tvPrice);
 		tvDescription = findViewById(R.id.tvDescription);
@@ -24,20 +31,24 @@ public class ProductDetailActivity extends AppCompatActivity {
 		tvIngredients = findViewById(R.id.tvIngredients);
 		ivProduct = findViewById(R.id.ivProduct);
 
-		// Nhận dữ liệu từ Intent
-		String name = getIntent().getStringExtra("name");
-		String price = getIntent().getStringExtra("price");
-		String imageUrl = getIntent().getStringExtra("imageUrl");
-		String description = getIntent().getStringExtra("description");
-		String origin = getIntent().getStringExtra("origin");
-		String ingredients = getIntent().getStringExtra("ingredients");
 
-		tvName.setText(name);
-		tvPrice.setText("Giá: " + price);
-		tvDescription.setText("Mô tả: " + description);
-		tvOrigin.setText("Nguồn gốc: " + origin);
-		tvIngredients.setText("Thành phần: " + ingredients);
+		Product product = (Product) getIntent().getSerializableExtra("product");
 
-		Glide.with(this).load(imageUrl).into(ivProduct);
+		if (product != null) {
+			tvName.setText(product.getName());
+			tvPrice.setText("Giá: " + product.getPrice());
+			tvDescription.setText("Mô tả: " + product.getDescription());
+			tvOrigin.setText("Nguồn gốc: " + product.getOrigin());
+			tvIngredients.setText("Thành phần: " + product.getIngredients());
+
+			Glide.with(this).load(product.getImageUrl()).into(ivProduct);
+		}
+	}
+
+
+	@Override
+	public boolean onSupportNavigateUp() {
+		finish();
+		return true;
 	}
 }

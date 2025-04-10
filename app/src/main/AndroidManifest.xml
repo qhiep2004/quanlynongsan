@@ -15,7 +15,7 @@
 
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".AdminActivity"
 
             android:exported="true">
             <intent-filter>
@@ -26,6 +26,9 @@
         </activity>
         <activity android:name=".ProductDetailActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".AddEditProductActivity" />
+        <activity android:name=".LoginActivity" />
 
     </application>
 

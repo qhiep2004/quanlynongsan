@@ -48,16 +48,18 @@ public class LoginActivity extends AppCompatActivity {
 					boolean isValid = false;
 
 					for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-						String dbEmail = userSnapshot.child("email").getValue(String.class);
-						String dbPassword = userSnapshot.child("password").getValue(String.class);
+						Users user = userSnapshot.getValue(Users.class);
 
-						if (email.equals(dbEmail) && password.equals(dbPassword)) {
+						if (user != null && email.equals(user.getEmail()) && password.equals(user.getPassword())) {
 							isValid = true;
 
-
+							// Lưu session nếu cần
 							SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
 							SharedPreferences.Editor editor = prefs.edit();
-							editor.putString("email", dbEmail);
+							editor.putString("email", user.getEmail());
+							editor.putString("name", user.getName());
+							editor.putString("phone", user.getPhone());
+							editor.putString("address", user.getAddress());
 							editor.apply();
 
 							break;
