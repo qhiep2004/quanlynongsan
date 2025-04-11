@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 import android.widget.TextView;
+
 public class LoginActivity extends AppCompatActivity {
 
 	private EditText edtEmail, edtPassword;
@@ -43,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
 				return;
 			}
 
-
 			mAuth.signInWithEmailAndPassword(email, password)
 					.addOnCompleteListener(task -> {
 						if (task.isSuccessful()) {
@@ -60,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
 									public void onDataChange(DataSnapshot snapshot) {
 										Users user = snapshot.getValue(Users.class);
 										if (user != null) {
-
 											SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
 											SharedPreferences.Editor editor = prefs.edit();
 											editor.putString("email", user.getEmail());
@@ -70,7 +69,17 @@ public class LoginActivity extends AppCompatActivity {
 											editor.apply();
 
 											Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-											startActivity(new Intent(LoginActivity.this, MainActivity.class));
+
+
+											String role = snapshot.child("role").getValue(String.class);
+											if ("admin".equals(role)) {
+												startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+											} else if ("seller".equals(role)) {
+												startActivity(new Intent(LoginActivity.this, SellerProductsActivity.class));
+											} else {
+												startActivity(new Intent(LoginActivity.this, MainActivity.class));
+											}
+
 											finish();
 										}
 									}
@@ -81,7 +90,6 @@ public class LoginActivity extends AppCompatActivity {
 									}
 								});
 							}
-
 						} else {
 							Toast.makeText(LoginActivity.this, "Sai email hoặc mật khẩu", Toast.LENGTH_SHORT).show();
 						}

@@ -2,6 +2,7 @@ package com.example.ungdungnongsan;
 import java.io.Serializable;
 
 public class Product implements Serializable  {
+	private String id;
 	private String name;
 	private String imageUrl;
 	private String price;
@@ -10,7 +11,25 @@ public class Product implements Serializable  {
 	private String ingredients;
 	private String key;
 	private String category;
+	private String idSeller;
+
 	public Product() {}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getIdSeller() {
+		return idSeller;
+	}
+
+	public void setIdSeller(String idSeller) {
+		this.idSeller = idSeller;
+	}
 
 	public Product(String name, String imageUrl, String price, String description, String origin, String ingredients) {
 		this.name = name;

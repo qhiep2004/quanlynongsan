@@ -42,8 +42,16 @@ public class AdminActivity extends AppCompatActivity {
 
 		findViewById(R.id.btnAddProduct).setOnClickListener(v -> {
 			Intent intent = new Intent(this, AddEditProductActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, 1);
 		});
+
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 1 && resultCode == RESULT_OK) {
+			loadProducts();
+		}
 	}
 
 	private void loadProducts() {

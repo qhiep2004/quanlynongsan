@@ -7,14 +7,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddEditProductActivity extends AppCompatActivity {
 
 	private EditText etName, etPrice, etImageUrl, etDescription, etOrigin, etIngredients, etCategory;
 	private Button btnSave;
-
 	private Product product;
 
 	@Override
@@ -31,7 +38,18 @@ public class AddEditProductActivity extends AppCompatActivity {
 		etCategory = findViewById(R.id.etCategory);
 		btnSave = findViewById(R.id.btnSave);
 
+		AutoCompleteTextView autoCompleteCategory = (AutoCompleteTextView) etCategory;
+		List<String> categoryList = new ArrayList<>();
+		categoryList.add("Cá");
+		categoryList.add("Rau");
+		categoryList.add("Thịt");
+		categoryList.add("Trái cây");
 
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categoryList);
+		autoCompleteCategory.setAdapter(adapter);
+		autoCompleteCategory.setThreshold(1);
+
+		// Nếu sửa sản phẩm
 		if (getIntent().hasExtra("product")) {
 			product = (Product) getIntent().getSerializableExtra("product");
 			etName.setText(product.getName());
@@ -40,7 +58,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 			etDescription.setText(product.getDescription());
 			etOrigin.setText(product.getOrigin());
 			etIngredients.setText(product.getIngredients());
-			etCategory.setText(product.getCategory());
+			autoCompleteCategory.setText(product.getCategory(), false);
 		}
 
 		btnSave.setOnClickListener(v -> saveProduct());
@@ -60,31 +78,58 @@ public class AddEditProductActivity extends AppCompatActivity {
 			return;
 		}
 
-		DatabaseReference ref = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
-				                        .getReference("products").child(category);
+		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		if (user == null) {
+			Toast.makeText(this, "Không xác định được người dùng", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		String sellerId = user.getUid();
+
+		DatabaseReference ref = FirebaseDatabase
+				                        .getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
+				                        .getReference("products");
 
 		if (product == null) {
-
-			String key = ref.push().getKey();
+			// Thêm mới
+			String key = ref.child(category).push().getKey();
 			Product newProduct = new Product(name, imageUrl, price, description, origin, ingredients);
 			newProduct.setKey(key);
 			newProduct.setCategory(category);
-			ref.child(key).setValue(newProduct);
+			newProduct.setIdSeller(sellerId);
+
+			ref.child(category).child(key).setValue(newProduct);
 			Toast.makeText(this, "Thêm thành công", Toast.LENGTH_SHORT).show();
 		} else {
 
-			product.setName(name);
-			product.setPrice(price);
-			product.setImageUrl(imageUrl);
-			product.setDescription(description);
-			product.setOrigin(origin);
-			product.setIngredients(ingredients);
-			product.setCategory(category);
+			if (!product.getCategory().equals(category)) {
 
-			ref.child(product.getKey()).setValue(product);
+				ref.child(product.getCategory()).child(product.getKey()).removeValue();
+
+
+				String key = ref.child(category).push().getKey();
+				Product updatedProduct = new Product(name, imageUrl, price, description, origin, ingredients);
+				updatedProduct.setKey(key);
+				updatedProduct.setCategory(category);
+				updatedProduct.setIdSeller(product.getIdSeller());
+
+				ref.child(category).child(key).setValue(updatedProduct);
+			} else {
+
+				product.setName(name);
+				product.setPrice(price);
+				product.setImageUrl(imageUrl);
+				product.setDescription(description);
+				product.setOrigin(origin);
+				product.setIngredients(ingredients);
+
+				ref.child(category).child(product.getKey()).setValue(product);
+			}
+
 			Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
 		}
 
+		setResult(RESULT_OK);
 		finish();
 	}
 }

@@ -114,10 +114,22 @@ public class MainActivity extends AppCompatActivity {
 		categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnCategoryClickListener() {
 			@Override
 			public void onCategoryClick(String categoryName) {
-				Toast.makeText(MainActivity.this, "Chọn: " + categoryName, Toast.LENGTH_SHORT).show();
+				if (categoryName.equals("Tất cả")) {
+					groupProductAdapter.setData(groupProductList);
+					return;
+				}
 
+				List<GroupProduct> filteredGroups = new ArrayList<>();
+				for (GroupProduct group : groupProductList) {
+					if (group.getGroupName().equalsIgnoreCase(categoryName)) {
+						filteredGroups.add(group);
+						break;
+					}
+				}
+				groupProductAdapter.setData(filteredGroups);
 			}
 		});
+
 		rvCategories.setAdapter(categoryAdapter);
 
 		rvGroupProducts = findViewById(R.id.rvGroupProducts);

@@ -6,9 +6,17 @@ public class Users {
 	private String name;
 	private String phone;
 	private String address;
-
+	private String role;
 	public Users() {
 
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public Users(String email, String password, String name, String phone, String address) {
