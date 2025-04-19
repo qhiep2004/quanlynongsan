@@ -44,5 +44,3 @@ Dự án này được phát hành dưới giấy phép [MIT](LICENSE).
 - Tác giả: qhiep2004
 - Email: [qhiep2004@example.com](mailto:qhiep2004@example.com)
 ```
-
-Nếu bạn cần thêm chi tiết hoặc chỉnh sửa cụ thể, hãy cho tôi biết để cập nhật README phù hợp hơn!
