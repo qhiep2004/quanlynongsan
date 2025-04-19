@@ -1,8 +1,12 @@
 package com.example.ungdungnongsan;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -13,11 +17,16 @@ public class ProductDetailActivity extends AppCompatActivity {
 	private TextView tvName, tvPrice, tvDescription, tvOrigin, tvIngredients;
 	private ImageView ivProduct;
 
-	@Override
+	@SuppressLint("MissingInflatedId")
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_detail);
-
+		// Set up the toolbar
+		findViewById(R.id.ivCart).setOnClickListener(v -> {
+			Intent intent = new Intent(ProductDetailActivity.this, CartActivity.class);
+			startActivity(intent);
+		});
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -43,6 +52,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
 			Glide.with(this).load(product.getImageUrl()).into(ivProduct);
 		}
+		setupAddToCartButton();
 	}
 
 
@@ -50,5 +60,14 @@ public class ProductDetailActivity extends AppCompatActivity {
 	public boolean onSupportNavigateUp() {
 		finish();
 		return true;
+	}
+	private void setupAddToCartButton() {
+		findViewById(R.id.btnAddToCart).setOnClickListener(v -> {
+			Product product = (Product) getIntent().getSerializableExtra("product");
+			if (product != null) {
+				CartManager.getInstance().addToCart(product);
+				Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 }

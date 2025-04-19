@@ -23,6 +23,15 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <ImageView
+                android:id="@+id/ivCart"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="Cart"
+                android:src="@drawable/ic_launcher_cart" />
+
+            <ImageView
                 android:id="@+id/ivProduct"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

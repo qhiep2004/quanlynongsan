@@ -4,7 +4,14 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-
+    <ImageView
+        android:id="@+id/ivCart"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_toStartOf="@id/ivUserIcon"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_launcher_cart"
+        android:contentDescription="Cart Icon" />
     <ImageView
         android:id="@+id/ivUserIcon"
         android:layout_width="32dp"
