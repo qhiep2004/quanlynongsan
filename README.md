@@ -1,4 +1,3 @@
-Dưới đây là một tệp README.md được viết phù hợp với thông tin bạn cung cấp và việc sử dụng sensor trong project:
 
 ```markdown
 # Quản Lý Nông Sản
