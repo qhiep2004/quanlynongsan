@@ -3,7 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="8dp">
+    <ImageView
+        android:id="@+id/ivThemeToggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_theme_toggle"
+        android:padding="8dp"
+        android:contentDescription="Chuyển đổi chế độ sáng/tối"/>
 
+    <Switch
+        android:id="@+id/autoThemeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+    android:minHeight="48dp"
+    android:minWidth="48dp"
+    android:text="Tự động"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="8dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:layout_toStartOf="@id/ivThemeToggle" />
     <ImageView
         android:id="@+id/ivCart"
         android:layout_width="32dp"

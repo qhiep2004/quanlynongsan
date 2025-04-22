@@ -4,12 +4,93 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SellerProductsActivity">
+    <Button
+        android:id="@+id/btnSellerInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INFO"
+        android:layout_marginTop="12dp"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="#E53935"/>
+
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        android:text="Đăng xuất"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#E53935" />
+
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_toEndOf="@id/btnSellerInfo"
+        android:layout_toStartOf="@id/btnLogout"
+        android:layout_alignTop="@id/btnLogout"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Tìm kiếm sản phẩm..."
+        android:textColor="#000000"
+        android:textColorHint="#888888"
+        android:background="@android:drawable/editbox_background"
+        android:padding="12dp"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp" />
+
+
+
+    <HorizontalScrollView
+        android:id="@+id/categoryScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etSearch"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:contentDescription="Thanh cuộn danh mục sản phẩm">
+
+        <LinearLayout
+            android:id="@+id/categoryLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/tvCategoryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/categoryScroll"
+        android:layout_margin="8dp"
+        android:text="Tất cả"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/tvSeeAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/categoryScroll"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        android:text="Xem tất cả"
+        android:textColor="#1E88E5"
+        android:textSize="14sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSellerProducts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:layout_below="@id/tvCategoryTitle"
+        android:padding="4dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddProduct"
@@ -17,7 +98,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Thêm sản phẩm mới"
         android:src="@android:drawable/ic_input_add" />
 
 </RelativeLayout>

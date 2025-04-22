@@ -16,7 +16,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class CartActivity extends AppCompatActivity implements CartAdapter.CartItemListener {
     private RecyclerView rvCart, rvRelatedProducts;
@@ -25,11 +27,15 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
     private TextView tvTotal, tvCartCount;
     private ArrayList<CartItem> cartItems;
     private ArrayList<Product> relatedProducts;
+    private DecimalFormat decimalFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+
+        // Khởi tạo định dạng số phù hợp với tiếng Việt
+        decimalFormat = new DecimalFormat("#,###");
 
         initViews();
         setupCart();
@@ -61,12 +67,12 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRelatedProducts.setAdapter(relatedProductsAdapter);
 
-        // Get category of first item in cart
+
         if (!cartItems.isEmpty()) {
             String category = cartItems.get(0).getProduct().getCategory();
-            // Fetch related products from Firebase based on category
+
             DatabaseReference rootRef = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
-                    .getReference("products").child(category);
+                                                .getReference("products").child(category);
             rootRef.limitToFirst(5).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -103,11 +109,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
     }
 
     private void updateTotal() {
-        double total = 0;
-        for (CartItem item : cartItems) {
-            total += Double.parseDouble(item.getProduct().getPrice()) * item.getQuantity();
-        }
-        tvTotal.setText("Tổng tiền: " + total + "đ");
+        double total = calculateTotalAmount();
+        tvTotal.setText("Tổng tiền: " + decimalFormat.format(total) + "đ");
     }
 
     @Override
@@ -122,7 +125,6 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
             finish();
         }
     }
-
 
     private void startCheckout() {
         if (cartItems == null || cartItems.isEmpty()) {
@@ -144,7 +146,9 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
     private double calculateTotalAmount() {
         double total = 0;
         for (CartItem item : cartItems) {
-            total += Double.parseDouble(item.getProduct().getPrice()) * item.getQuantity();
+            // Loại bỏ dấu chấm phân cách hàng nghìn trước khi parse
+            String cleanPrice = item.getProduct().getPrice().replace(".", "");
+            total += Double.parseDouble(cleanPrice) * item.getQuantity();
         }
         return total;
     }

@@ -6,4 +6,6 @@
     <string name="ingredients_title">Thành phần</string>
     <string name="add_to_cart">Thêm vào giỏ hàng</string>
     <string name="favorite">Yêu thích</string>
+    <item name="progressBar" type="id" />
+    <item name="btnCancel" type="id" />
 </resources>

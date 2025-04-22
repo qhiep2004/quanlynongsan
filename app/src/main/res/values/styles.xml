@@ -42,4 +42,22 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/accent1</item>
     </style>
+
+    <style name="AppTheme1" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColor">@color/text_dark</item>
+    </style>
+
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarker</item>
+        <item name="colorAccent">@color/colorAccentDark</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColor">@color/text_light</item>
+    </style>
+
 </resources>

@@ -1,7 +1,6 @@
 package com.example.ungdungnongsan;
 
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,11 +25,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CheckoutActivity extends AppCompatActivity implements LocationHelper.LocationListener, OnMapReadyCallback {
+public class CheckoutActivity extends AppCompatActivity implements OnMapReadyCallback, LocationHelper.LocationListener {
     private TextView tvOrderSummary, tvTotalAmount;
     private EditText etName, etAddress, etPhone;
     private Button btnPlaceOrder;
@@ -41,12 +41,17 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
     private Button btnGetLocation;
     private double latitude, longitude;
     private GoogleMap mMap;
+    private DecimalFormat decimalFormat;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+
+
+        decimalFormat = new DecimalFormat("#,###");
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -54,9 +59,9 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
             getSupportActionBar().setTitle("Thanh toán");
         }
 
-        // Initialize map
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map_checkout);
+                                                                      .findFragmentById(R.id.map_checkout);
         mapFragment.getMapAsync(this);
 
         tvOrderSummary = findViewById(R.id.tvOrderSummary);
@@ -66,7 +71,7 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
         etPhone = findViewById(R.id.etPhone);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         try {
-            // Retrieve cart data from intent
+
             cartItems = (ArrayList<CartItem>) getIntent().getSerializableExtra("cartItems");
             totalAmount = getIntent().getDoubleExtra("totalAmount", 0);
 
@@ -94,10 +99,10 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
                     longitude = location.getLongitude();
                     tvLocation.setText("Vị trí: " + latitude + ", " + longitude);
 
-                    // Use Geocoder to get address from coordinates
+
                     getAddressFromLocation(location);
 
-                    // Update map with the location
+
                     updateMapLocation(location);
                 }
 
@@ -114,15 +119,15 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
 
         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-        // Clear previous markers
+
         mMap.clear();
 
-        // Add marker for user location
-        mMap.addMarker(new MarkerOptions()
-                .position(userLocation)
-                .title("Vị trí của bạn"));
 
-        // Move camera to the location with zoom level 15
+        mMap.addMarker(new MarkerOptions()
+                               .position(userLocation)
+                               .title("Vị trí của bạn"));
+
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
     }
 
@@ -130,7 +135,7 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Vietnam default view if no location is available yet
+
         LatLng vietnam = new LatLng(16.0, 108.0);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(vietnam, 5));
     }
@@ -156,7 +161,6 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
         }
     }
 
-    // Keep the rest of your existing methods unchanged
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -169,15 +173,19 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
     private void displayOrderSummary() {
         StringBuilder summary = new StringBuilder();
         for (CartItem item : cartItems) {
+
+            String cleanPrice = item.getProduct().getPrice().replace(".", "");
+            double itemTotal = Double.parseDouble(cleanPrice) * item.getQuantity();
+
             summary.append(item.getProduct().getName())
                     .append(" x ")
                     .append(item.getQuantity())
                     .append(" = ")
-                    .append(Double.parseDouble(item.getProduct().getPrice()) * item.getQuantity())
+                    .append(decimalFormat.format(itemTotal))
                     .append("đ\n");
         }
         tvOrderSummary.setText(summary.toString());
-        tvTotalAmount.setText("Tổng tiền: " + totalAmount + "đ");
+        tvTotalAmount.setText("Tổng tiền: " + decimalFormat.format(totalAmount) + "đ");
     }
 
     private void placeOrder() {
@@ -190,9 +198,9 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
             return;
         }
 
-        // Save order to Firebase
+
         DatabaseReference ordersRef = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
-                .getReference("orders");
+                                              .getReference("orders");
         String orderId = ordersRef.push().getKey();
 
         Order order = new Order(orderId, name, address, phone, cartItems, totalAmount);
