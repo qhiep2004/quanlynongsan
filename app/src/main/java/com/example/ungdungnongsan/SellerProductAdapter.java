@@ -47,10 +47,20 @@ public class SellerProductAdapter extends RecyclerView.Adapter<SellerProductAdap
 		holder.tvProductName.setText(product.getName());
 		holder.tvPrice.setText(product.getPrice() + "đ");
 		holder.tvProductDesc.setText("Sản phẩm nông sản tươi");
+		if (product.getQuantity() == 0) {
+			holder.tvQuantity.setText("Hết hàng");
+			holder.tvQuantity.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
+			holder.imgProduct.setAlpha(0.5f);
+		} else {
+			holder.tvQuantity.setText("Số lượng: " + product.getQuantity());
+			holder.tvQuantity.setTextColor(context.getResources().getColor(android.R.color.black));
+			holder.imgProduct.setAlpha(1f);
+		}
 
 		if (product.getPrice() != null && !product.getPrice().isEmpty()) {
 			holder.tvOriginalPrice.setText(product.getPrice() + "đ");
 			holder.tvOriginalPrice.setVisibility(View.VISIBLE);
+			holder.tvQuantity.setVisibility(View.VISIBLE);
 		} else {
 			holder.tvOriginalPrice.setVisibility(View.GONE);
 		}
@@ -122,7 +132,7 @@ public class SellerProductAdapter extends RecyclerView.Adapter<SellerProductAdap
 
 	static class ProductViewHolder extends RecyclerView.ViewHolder {
 		ImageView imgProduct;
-		TextView tvProductName, tvProductDesc, tvPrice, tvOriginalPrice;
+		TextView tvProductName, tvProductDesc, tvPrice, tvOriginalPrice,tvQuantity;
 		CardView cardView;
 		Button btnEdit, btnDelete;
 
@@ -132,6 +142,7 @@ public class SellerProductAdapter extends RecyclerView.Adapter<SellerProductAdap
 			tvProductName = itemView.findViewById(R.id.tvProductName);
 			tvProductDesc = itemView.findViewById(R.id.tvProductDesc);
 			tvPrice = itemView.findViewById(R.id.tvPrice);
+			tvQuantity = itemView.findViewById(R.id.tvQuantity);
 			tvOriginalPrice = itemView.findViewById(R.id.tvOriginalPrice);
 			cardView = (CardView) itemView;
 			btnEdit = itemView.findViewById(R.id.btnEdit);

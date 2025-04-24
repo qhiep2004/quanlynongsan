@@ -55,6 +55,7 @@
                 android:textSize="14sp"
                 android:layout_marginTop="4dp" />
 
+
             <TextView
                 android:id="@+id/tvOriginalPrice"
                 android:layout_width="match_parent"
@@ -63,6 +64,15 @@
                 android:textSize="12sp"
                 android:textColor="#757575"
                 />
+            <TextView
+                android:id="@+id/tvQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Số lượng: "
+                android:textSize="12sp"
+                android:textColor="#4CAF50"
+                android:layout_marginTop="4dp" />
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

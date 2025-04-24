@@ -221,7 +221,7 @@ public class SellerProductsActivity extends AppCompatActivity {
 		DatabaseReference ref = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
 				                        .getReference("products");
 
-		ref.addListenerForSingleValueEvent(new ValueEventListener() {
+		ref.addValueEventListener(new ValueEventListener() { // Thay đổi từ addListenerForSingleValueEvent sang addValueEventListener để lắng nghe thay đổi liên tục
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
 				productList.clear();

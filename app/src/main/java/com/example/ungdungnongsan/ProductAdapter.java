@@ -36,6 +36,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 		Product product = productList.get(position);
 		holder.tvProductName.setText(product.getName());
 		holder.tvPrice.setText(product.getPrice() + "đ");
+		if (product.getQuantity() == 0) {
+			holder.tvQuantity.setText("Hết hàng");
+			holder.tvQuantity.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
+			holder.imgProduct.setAlpha(0.5f);
+		} else {
+			holder.tvQuantity.setText("Số lượng: " + product.getQuantity());
+			holder.tvQuantity.setTextColor(context.getResources().getColor(android.R.color.holo_green_dark));
+			holder.imgProduct.setAlpha(1f);
+		}
 
 
 		holder.tvProductDesc.setText("Sản phẩm nông sản sạch");
@@ -66,7 +75,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 	public static class ProductViewHolder extends RecyclerView.ViewHolder {
 		ImageView imgProduct;
 		TextView tvProductName, tvProductDesc, tvPrice, tvOriginalPrice;
-
+		TextView tvQuantity;
 		public ProductViewHolder(@NonNull View itemView) {
 			super(itemView);
 			imgProduct = itemView.findViewById(R.id.imgProduct);
@@ -74,6 +83,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 			tvProductDesc = itemView.findViewById(R.id.tvProductDesc);
 			tvPrice = itemView.findViewById(R.id.tvPrice);
 			tvOriginalPrice = itemView.findViewById(R.id.tvOriginalPrice);
+			tvQuantity = itemView.findViewById(R.id.tvQuantity);
 		}
 	}
 }

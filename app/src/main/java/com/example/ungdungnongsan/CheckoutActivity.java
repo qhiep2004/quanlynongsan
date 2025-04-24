@@ -29,7 +29,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+import android.util.Log;
 public class CheckoutActivity extends AppCompatActivity implements OnMapReadyCallback, LocationHelper.LocationListener {
     private TextView tvOrderSummary, tvTotalAmount;
     private EditText etName, etAddress, etPhone;
@@ -209,11 +209,92 @@ public class CheckoutActivity extends AppCompatActivity implements OnMapReadyCal
         ordersRef.child(orderId).setValue(order)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-                    // Clear the cart after successful order
+
+                    for (CartItem item : cartItems) {
+                        Product product = item.getProduct();
+                        int quantityPurchased = item.getQuantity();
+                        String productCategory = product.getCategory();
+
+                        // Sử dụng ID là thuộc tính chính
+                        String productKey = product.getId();
+
+                        // Kiểm tra null và thử sử dụng key nếu id là null
+                        if (productKey == null) {
+                            productKey = product.getKey();
+                        }
+
+                        // Kiểm tra lại nếu vẫn null
+                        if (productKey == null || productKey.isEmpty()) {
+                            Log.e("CheckoutActivity", "Không thể cập nhật số lượng cho sản phẩm: " + product.getName() + " - ID/Key là null");
+                            continue; // Bỏ qua sản phẩm này và tiếp tục với sản phẩm tiếp theo
+                        }
+
+                        Log.d("CheckoutActivity", "Đang xử lý sản phẩm: " + product.getName());
+                        Log.d("CheckoutActivity", "Category: " + productCategory + ", Key: " + productKey + ", Quantity mua: " + quantityPurchased);
+
+                        // Tiếp tục với code cập nhật Firebase...
+                        DatabaseReference quantityRef = FirebaseDatabase
+                                                                .getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
+                                                                .getReference("products")
+                                                                .child(productCategory)
+                                                                .child(productKey)
+                                                                .child("quantity");
+
+                        quantityRef.get().addOnSuccessListener(snapshot -> {
+                            // Lấy giá trị thô từ Firebase thay vì ép kiểu trực tiếp
+                            Object rawValue = snapshot.getValue();
+                            int currentQuantity = 0;
+
+                            if (rawValue != null) {
+                                if (rawValue instanceof String) {
+                                    try {
+                                        // Nếu là chuỗi, chuyển đổi sang int
+                                        currentQuantity = Integer.parseInt((String) rawValue);
+                                        Log.d("CheckoutActivity", "Chuyển đổi String sang Int: " + rawValue + " -> " + currentQuantity);
+                                    } catch (NumberFormatException e) {
+                                        Log.e("CheckoutActivity", "Lỗi chuyển đổi chuỗi sang số: " + e.getMessage());
+                                    }
+                                } else if (rawValue instanceof Long) {
+                                    // Nếu là Long, chuyển đổi sang int
+                                    currentQuantity = ((Long) rawValue).intValue();
+                                    Log.d("CheckoutActivity", "Chuyển đổi Long sang Int: " + rawValue + " -> " + currentQuantity);
+                                } else if (rawValue instanceof Integer) {
+                                    // Nếu đã là Integer rồi
+                                    currentQuantity = (Integer) rawValue;
+                                    Log.d("CheckoutActivity", "Giá trị đã là Integer: " + currentQuantity);
+                                } else if (rawValue instanceof Double) {
+                                    // Nếu là Double, chuyển đổi sang int
+                                    currentQuantity = ((Double) rawValue).intValue();
+                                    Log.d("CheckoutActivity", "Chuyển đổi Double sang Int: " + rawValue + " -> " + currentQuantity);
+                                } else {
+                                    Log.w("CheckoutActivity", "Kiểu dữ liệu không xác định: " + rawValue.getClass().getName());
+                                }
+                            } else {
+                                Log.w("CheckoutActivity", "Giá trị quantity là null, đặt mặc định = 0");
+                            }
+
+                            int updatedQuantity = currentQuantity - quantityPurchased;
+                            if (updatedQuantity < 0) updatedQuantity = 0;
+
+                            Log.d("CheckoutActivity", "Số lượng hiện tại: " + currentQuantity + ", Cập nhật còn: " + updatedQuantity);
+
+                            quantityRef.setValue(updatedQuantity)
+                                    .addOnSuccessListener(v -> Log.d("CheckoutActivity", "Cập nhật số lượng thành công cho: " + product.getName()))
+
+                                    .addOnFailureListener(e -> Log.e("CheckoutActivity", "Lỗi cập nhật số lượng: " + e.getMessage()));
+
+                        }).addOnFailureListener(e -> {
+                            Log.e("CheckoutActivity", "Lỗi lấy số lượng sản phẩm từ Firebase: " + e.getMessage());
+                        });
+                    }
+
                     CartManager.getInstance().getCartItems().clear();
-                    finish(); // Close the activity
+                    finish();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi đặt hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Log.e("CheckoutActivity", "Lỗi khi đặt hàng: " + e.getMessage());
+                    Toast.makeText(this, "Lỗi khi đặt hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -250,5 +331,41 @@ public class CheckoutActivity extends AppCompatActivity implements OnMapReadyCal
                 Toast.makeText(this, "Cần cấp quyền truy cập vị trí để sử dụng tính năng này", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    /**
+     * Phương thức tiện ích để chuẩn hóa tất cả các trường số lượng trong cơ sở dữ liệu Firebase
+     * Chuyển đổi tất cả các giá trị quantity từ String sang Integer
+     * Bạn có thể gọi phương thức này từ một activity quản trị hoặc một lần khi setup ứng dụng
+     */
+    private void normalizeQuantityFields() {
+        DatabaseReference productsRef = FirebaseDatabase
+                                                .getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
+                                                .getReference("products");
+
+        productsRef.get().addOnSuccessListener(snapshot -> {
+            for (com.google.firebase.database.DataSnapshot categorySnapshot : snapshot.getChildren()) {
+                String category = categorySnapshot.getKey();
+
+                for (com.google.firebase.database.DataSnapshot productSnapshot : categorySnapshot.getChildren()) {
+                    String productKey = productSnapshot.getKey();
+                    Object rawQuantity = productSnapshot.child("quantity").getValue();
+
+                    if (rawQuantity instanceof String) {
+                        try {
+                            int numericQuantity = Integer.parseInt((String) rawQuantity);
+                            productsRef.child(category).child(productKey).child("quantity").setValue(numericQuantity);
+                            Log.d("DataNormalization", "Đã chuẩn hóa quantity cho " + category + "/" + productKey);
+                        } catch (NumberFormatException e) {
+                            Log.e("DataNormalization", "Không thể chuyển đổi: " + rawQuantity);
+                        }
+                    }
+                }
+            }
+            Toast.makeText(this, "Quá trình chuẩn hóa dữ liệu đã hoàn tất", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            Log.e("DataNormalization", "Lỗi khi chuẩn hóa dữ liệu: " + e.getMessage());
+            Toast.makeText(this, "Lỗi khi chuẩn hóa dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 }

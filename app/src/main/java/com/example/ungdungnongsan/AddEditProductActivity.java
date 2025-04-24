@@ -20,7 +20,7 @@ import java.util.List;
 
 public class AddEditProductActivity extends AppCompatActivity {
 
-	private EditText etName, etPrice, etImageUrl, etDescription, etOrigin, etIngredients, etCategory;
+	private EditText etName, etPrice, etImageUrl, etDescription, etOrigin, etIngredients, etCategory, etQuantity;
 	private Button btnSave;
 	private Product product;
 
@@ -36,6 +36,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 		etOrigin = findViewById(R.id.etOrigin);
 		etIngredients = findViewById(R.id.etIngredients);
 		etCategory = findViewById(R.id.etCategory);
+		etQuantity = findViewById(R.id.etQuantity);
 		btnSave = findViewById(R.id.btnSave);
 
 		AutoCompleteTextView autoCompleteCategory = (AutoCompleteTextView) etCategory;
@@ -59,6 +60,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 			etOrigin.setText(product.getOrigin());
 			etIngredients.setText(product.getIngredients());
 			autoCompleteCategory.setText(product.getCategory(), false);
+			etQuantity.setText(String.valueOf(product.getQuantity())); // Hiển thị số lượng hiện tại
 		}
 
 		btnSave.setOnClickListener(v -> saveProduct());
@@ -72,6 +74,18 @@ public class AddEditProductActivity extends AppCompatActivity {
 		String origin = etOrigin.getText().toString().trim();
 		String ingredients = etIngredients.getText().toString().trim();
 		String category = etCategory.getText().toString().trim();
+
+
+		String quantityStr = etQuantity.getText().toString().trim();
+		int quantity = 0;
+		if (!quantityStr.isEmpty()) {
+			try {
+				quantity = Integer.parseInt(quantityStr);
+			} catch (NumberFormatException e) {
+				Toast.makeText(this, "Số lượng phải là số nguyên", Toast.LENGTH_SHORT).show();
+				return;
+			}
+		}
 
 		if (name.isEmpty() || price.isEmpty() || imageUrl.isEmpty() || category.isEmpty()) {
 			Toast.makeText(this, "Vui lòng nhập đầy đủ tên, giá, ảnh, danh mục", Toast.LENGTH_SHORT).show();
@@ -97,6 +111,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 			newProduct.setKey(key);
 			newProduct.setCategory(category);
 			newProduct.setIdSeller(sellerId);
+			newProduct.setQuantity(quantity); // Thiết lập giá trị số lượng
 
 			ref.child(category).child(key).setValue(newProduct);
 			Toast.makeText(this, "Thêm thành công", Toast.LENGTH_SHORT).show();
@@ -112,6 +127,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 				updatedProduct.setKey(key);
 				updatedProduct.setCategory(category);
 				updatedProduct.setIdSeller(product.getIdSeller());
+				updatedProduct.setQuantity(quantity); // Thiết lập giá trị số lượng
 
 				ref.child(category).child(key).setValue(updatedProduct);
 			} else {
@@ -122,6 +138,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 				product.setDescription(description);
 				product.setOrigin(origin);
 				product.setIngredients(ingredients);
+				product.setQuantity(quantity); // Cập nhật giá trị số lượng
 
 				ref.child(category).child(product.getKey()).setValue(product);
 			}

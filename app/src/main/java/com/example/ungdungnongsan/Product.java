@@ -12,7 +12,7 @@ public class Product implements Serializable  {
 	private String key;
 	private String category;
 	private String idSeller;
-
+	private int quantity;
 	public Product() {}
 
 	public String getId() {
@@ -29,6 +29,20 @@ public class Product implements Serializable  {
 
 	public void setIdSeller(String idSeller) {
 		this.idSeller = idSeller;
+	}
+
+	public Product(String id, String name, String imageUrl, String price, String description, String origin, String ingredients, String key, String category, String idSeller, int quantity) {
+		this.id = id;
+		this.name = name;
+		this.imageUrl = imageUrl;
+		this.price = price;
+		this.description = description;
+		this.origin = origin;
+		this.ingredients = ingredients;
+		this.key = key;
+		this.category = category;
+		this.idSeller = idSeller;
+		this.quantity = quantity;
 	}
 
 	public Product(String name, String imageUrl, String price, String description, String origin, String ingredients) {
@@ -93,4 +107,12 @@ public class Product implements Serializable  {
 	public String getName() { return name; }
 	public String getImageUrl() { return imageUrl; }
 	public String getPrice() { return price; }
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 }
