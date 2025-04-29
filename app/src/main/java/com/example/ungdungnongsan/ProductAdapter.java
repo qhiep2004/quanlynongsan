@@ -51,7 +51,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
 
 
-
+//chuyen sang chi tiet san pham
 		holder.tvOriginalPrice.setPaintFlags(holder.tvOriginalPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
 		holder.itemView.setOnClickListener(v -> {
 			Intent intent = new Intent(context, ProductDetailActivity.class);

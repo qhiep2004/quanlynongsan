@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import android.widget.Button;
+import android.util.Log;
+
 public class SellerProductsActivity extends AppCompatActivity {
 
 	private RecyclerView recyclerView;
@@ -155,6 +157,12 @@ public class SellerProductsActivity extends AppCompatActivity {
 		Button btnSellerInfo = findViewById(R.id.btnSellerInfo);
 		btnSellerInfo.setOnClickListener(v -> {
 			showSellerInfo();
+		});
+		Button btnStatistics = findViewById(R.id.btnStatistics);
+		btnStatistics.setOnClickListener(v -> {
+			Log.d("StatisticsActivity", "Nút xem thống kê đã được nhấn");
+			Intent intent = new Intent(SellerProductsActivity.this, StatisticsActivity.class);
+			startActivity(intent);
 		});
 
 

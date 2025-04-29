@@ -31,6 +31,7 @@ public class Product implements Serializable  {
 		this.idSeller = idSeller;
 	}
 
+
 	public Product(String id, String name, String imageUrl, String price, String description, String origin, String ingredients, String key, String category, String idSeller, int quantity) {
 		this.id = id;
 		this.name = name;
@@ -45,6 +46,15 @@ public class Product implements Serializable  {
 		this.quantity = quantity;
 	}
 
+	public Product(String name, String imageUrl, String price, String description, String origin, String ingredients,String idSeller) {
+		this.name = name;
+		this.imageUrl = imageUrl;
+		this.price = price;
+		this.description = description;
+		this.origin = origin;
+		this.ingredients = ingredients;
+		this.idSeller= idSeller;
+	}
 	public Product(String name, String imageUrl, String price, String description, String origin, String ingredients) {
 		this.name = name;
 		this.imageUrl = imageUrl;
@@ -52,6 +62,7 @@ public class Product implements Serializable  {
 		this.description = description;
 		this.origin = origin;
 		this.ingredients = ingredients;
+
 	}
 	public String getKey() {
 		return key;

@@ -390,10 +390,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 								               ? idSnapshot.child("quantity").getValue(Integer.class)
 								               : 0;
 						if (name != null && imageUrl != null && price != null ) {
+//							String idSeller = idSnapshot.child("idSeller").getValue(String.class);
 							Product product = new Product(name, imageUrl, price, description, origin, ingredients);
 							product.setKey(idSnapshot.getKey());
 							product.setQuantity(quantity);
 							product.setCategory(groupName);
+//							product.setIdSeller(idSeller);
 							productList.add(product);
 							Log.d("MainActivity", "Đã thêm sản phẩm: " + name);
 						} else {

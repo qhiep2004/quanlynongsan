@@ -58,18 +58,24 @@ public class LoginActivity extends AppCompatActivity {
 								usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
 									@Override
 									public void onDataChange(DataSnapshot snapshot) {
-										Users user = snapshot.getValue(Users.class);
-										if (user != null) {
+										if (snapshot.exists()) {
+											String email = snapshot.child("email").getValue(String.class);
+											String name = snapshot.child("name").getValue(String.class);
+											String address = snapshot.child("address").getValue(String.class);
+
+											// Xử lý phone nếu là Long
+											Object phoneObj = snapshot.child("phone").getValue();
+											String phone = (phoneObj instanceof Long) ? String.valueOf(phoneObj) : (String) phoneObj;
+
 											SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
 											SharedPreferences.Editor editor = prefs.edit();
-											editor.putString("email", user.getEmail());
-											editor.putString("name", user.getName());
-											editor.putString("phone", user.getPhone());
-											editor.putString("address", user.getAddress());
+											editor.putString("email", email);
+											editor.putString("name", name);
+											editor.putString("phone", phone);
+											editor.putString("address", address);
 											editor.apply();
 
 											Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-
 
 											String role = snapshot.child("role").getValue(String.class);
 											if ("admin".equals(role)) {
