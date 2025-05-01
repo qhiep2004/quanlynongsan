@@ -1,139 +1,99 @@
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:padding="16dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+        <ImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="match_parent"
+            android:layout_height="102dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/darker_gray"
+            android:scaleType="centerCrop" />
+
+
+        <Button
+            android:id="@+id/btnChooseImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Chọn ảnh từ thiết bị"
+            android:layout_marginBottom="16dp" />
+
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:hint="Tên sản phẩm"
-            android:layout_marginBottom="16dp">
+            android:inputType="textCapWords"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/etPrice"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:hint="Giá"
-            android:layout_marginBottom="16dp">
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Thêm trường số lượng mới -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Số lượng"
-            android:layout_marginBottom="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etQuantity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Link ảnh"
-            android:layout_marginBottom="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etImageUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textUri" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Mô tả"
-            android:layout_marginBottom="16dp">
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDescription"
-                android:layout_width="match_parent"
-                android:layout_height="66dp"
-                android:inputType="textMultiLine"
-                android:minLines="3" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/etOrigin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Xuất xứ"
-            android:layout_marginBottom="16dp">
+            android:layout_height="48dp"
+            android:hint="Nguồn gốc"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etOrigin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/etIngredients"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:hint="Thành phần"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etIngredients"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:minLines="2" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        <AutoCompleteTextView
+            android:id="@+id/etCategory"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Danh mục"
-            android:layout_marginBottom="24dp">
+            android:layout_height="48dp"
+            android:hint="Danh mục (Cá, Rau, Thịt, Trái cây)"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/etCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+        <EditText
+            android:id="@+id/etQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Số lượng"
+            android:inputType="number"
+            android:layout_marginBottom="12dp"
+            android:padding="8dp" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/btnSave"
-            style="@style/AppButton.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:text="Lưu"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_save"
-            app:iconGravity="textStart" />
+            android:text="Lưu sản phẩm"
+            android:layout_marginTop="16dp" />
+
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>
