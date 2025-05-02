@@ -29,9 +29,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.text.DecimalFormat;
+
 
 public class CheckoutActivity extends AppCompatActivity implements LocationHelper.LocationListener, OnMapReadyCallback {
     private TextView tvOrderSummary, tvTotalAmount;
+    private DecimalFormat decimalFormat;
     private EditText etName, etAddress, etPhone;
     private Button btnPlaceOrder;
     private ArrayList<CartItem> cartItems;
@@ -47,6 +50,7 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        decimalFormat = new DecimalFormat();
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -169,15 +173,19 @@ public class CheckoutActivity extends AppCompatActivity implements LocationHelpe
     private void displayOrderSummary() {
         StringBuilder summary = new StringBuilder();
         for (CartItem item : cartItems) {
+
+            String cleanPrice = item.getProduct().getPrice().replace(".", "");
+            double itemTotal = Double.parseDouble(cleanPrice) * item.getQuantity();
+
             summary.append(item.getProduct().getName())
                     .append(" x ")
                     .append(item.getQuantity())
                     .append(" = ")
-                    .append(Double.parseDouble(item.getProduct().getPrice()) * item.getQuantity())
+                    .append(decimalFormat.format(itemTotal))
                     .append("đ\n");
         }
         tvOrderSummary.setText(summary.toString());
-        tvTotalAmount.setText("Tổng tiền: " + totalAmount + "đ");
+        tvTotalAmount.setText("Tổng tiền: " + decimalFormat.format(totalAmount) + "đ");
     }
 
     private void placeOrder() {

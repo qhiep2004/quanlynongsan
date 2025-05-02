@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="background">#FFFFFF</color>
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="accent">#4285F4</color>
-    <color name="divider">#E0E0E0</color>
+    <!-- Main theme colors -->
     <color name="primary">#4CAF50</color>
     <color name="primary_dark">#388E3C</color>
+    <color name="primary_color">#4CAF50</color>
+    <color name="accent">#8BC34A</color>
     <color name="accent1">#FF9800</color>
-    <color name="danger">#F44336</color>
-    <color name="text_primary1">#212121</color>
-    <color name="text_secondary1">#757575</color>
-    <color name="background1">#F5F5F5</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="price_color">#4CAF50</color>
+    <color name="secondary">#03A9F4</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+
+    <!-- Background colors -->
+    <color name="background">#F5F5F5</color>
     <color name="background_color">#F5F5F5</color>
-    <color name="primary_color">#3F51B5</color>
+
+    <!-- Status colors -->
+    <color name="danger">#F44336</color>
+
+    <!-- Product specific colors -->
+    <color name="price_color">#4CAF50</color>
+    <color name="organic_badge">#689F38</color>
+    <color name="local_badge">#43A047</color>
+
+    <!-- Other UI elements -->
+    <color name="divider">#DDDDDD</color>
 </resources>

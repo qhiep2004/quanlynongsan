@@ -1,15 +1,55 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp">
+    android:background="@color/background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Nông Sản Xanh"
+            app:titleTextColor="@android:color/white">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivLogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_launcher_foreground"
+                    android:contentDescription="Logo" />
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/ivLogo"
+                    android:layout_marginStart="8dp"
+                    android:text="Nông Sản Xanh"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView
         android:id="@+id/ivCart"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_toStartOf="@id/ivUserIcon"
+        android:layout_alignParentEnd="true"
         android:layout_margin="8dp"
+        android:layout_marginEnd="48dp"
         android:src="@drawable/ic_launcher_cart"
         android:contentDescription="Cart Icon" />
     <ImageView
@@ -24,9 +64,11 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_below="@id/ivUserIcon"
+        android:layout_below="@id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="8dp"
+        android:paddingHorizontal="8dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCategories"

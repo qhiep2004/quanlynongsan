@@ -1,12 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tvCategory"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="90dp"
+    android:layout_height="60dp"
     android:layout_margin="4dp"
-    android:padding="10dp"
-    android:background="@drawable/bg_category_item"
-    android:textColor="@android:color/black"
-    android:textSize="16sp"
-    android:text="Category"
-    android:gravity="center"/>
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/ivCategoryIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_vegetables"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rau củ"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="6dp"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvItemCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="10sp"
+            android:textColor="@color/text_secondary" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,6 +1,7 @@
 package com.example.ungdungnongsan;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,12 +39,24 @@ public class GroupProductAdapter extends RecyclerView.Adapter<GroupProductAdapte
 		GroupProduct group = groupList.get(position);
 		holder.tvGroupName.setText(group.getGroupName());
 
-		ProductAdapter productAdapter = new ProductAdapter(context, group.getProducts());
+		// Initially show only a limited number of products (e.g., first 4)
+		List<Product> displayedProducts = group.getProducts();
+		if (displayedProducts.size() > 4) {
+			displayedProducts = displayedProducts.subList(0, 4);
+		}
+
+		ProductAdapter productAdapter = new ProductAdapter(context, displayedProducts);
 		holder.rvProducts.setLayoutManager(new GridLayoutManager(context, 2));
 		holder.rvProducts.setAdapter(productAdapter);
 
+		// Show "View All" button only if there are more products
+		holder.tvViewAll.setVisibility(group.getProducts().size() > 4 ? View.VISIBLE : View.GONE);
+
 		holder.tvViewAll.setOnClickListener(v -> {
-			// Xử lý khi nhấn vào "Xem tất cả"
+			// Create intent to CategoryProductsActivity
+			Intent intent = new Intent(context, CategoryProductsActivity.class);
+			intent.putExtra("categoryName", group.getGroupName());
+			context.startActivity(intent);
 		});
 	}
 

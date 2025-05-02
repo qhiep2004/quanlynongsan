@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class CartActivity extends AppCompatActivity implements CartAdapter.CartItemListener {
@@ -25,12 +26,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
     private TextView tvTotal, tvCartCount;
     private ArrayList<CartItem> cartItems;
     private ArrayList<Product> relatedProducts;
+    private DecimalFormat decimalFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-
+        decimalFormat = new DecimalFormat("#,###");
         initViews();
         setupCart();
         setupRelatedProducts();
@@ -103,11 +105,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
     }
 
     private void updateTotal() {
-        double total = 0;
-        for (CartItem item : cartItems) {
-            total += Double.parseDouble(item.getProduct().getPrice()) * item.getQuantity();
-        }
-        tvTotal.setText("Tổng tiền: " + total + "đ");
+        double total = calculateTotalAmount();
+        tvTotal.setText("Tổng tiền: " + decimalFormat.format(total) + "đ");
     }
 
     @Override
@@ -144,7 +143,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartI
     private double calculateTotalAmount() {
         double total = 0;
         for (CartItem item : cartItems) {
-            total += Double.parseDouble(item.getProduct().getPrice()) * item.getQuantity();
+            String cleanPrice = item.getProduct().getPrice().replace(".", "");
+            total += Double.parseDouble(cleanPrice) * item.getQuantity();
         }
         return total;
     }

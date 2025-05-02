@@ -1,6 +1,7 @@
 package com.example.ungdungnongsan;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
-import android.content.Intent;
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
-	private List<Product> productList;
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 	private Context context;
+	private List<Product> productList;
 
 	public ProductAdapter(Context context, List<Product> productList) {
 		this.context = context;
@@ -37,20 +37,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 		holder.tvProductName.setText(product.getName());
 		holder.tvPrice.setText(product.getPrice() + "đ");
 
+		// Set origin if available
+		if (product.getOrigin() != null && !product.getOrigin().isEmpty()) {
+			holder.tvOrigin.setText(product.getOrigin());
+			holder.tvOrigin.setVisibility(View.VISIBLE);
+		} else {
+			holder.tvOrigin.setVisibility(View.GONE);
+		}
 
-		holder.tvProductDesc.setText("Sản phẩm nông sản sạch");
+		// You can add harvest date if you have it in your product model
+		// For now we'll hide it
+		holder.tvHarvestDate.setVisibility(View.GONE);
 
-
-
-
-		holder.tvOriginalPrice.setPaintFlags(holder.tvOriginalPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+		// Set up click listener for the entire item
 		holder.itemView.setOnClickListener(v -> {
-			Intent intent = new Intent(context, ProductDetailActivity.class);
-			intent.putExtra("product", product);
-			context.startActivity(intent);
-
+			try {
+				Intent intent = new Intent(context, ProductDetailActivity.class);
+				intent.putExtra("product", product);
+				context.startActivity(intent);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		});
-
 
 		Glide.with(context)
 				.load(product.getImageUrl())
@@ -58,6 +66,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 				.error(R.drawable.ic_launcher_background)
 				.into(holder.imgProduct);
 	}
+
 	@Override
 	public int getItemCount() {
 		return productList.size();
@@ -65,15 +74,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
 	public static class ProductViewHolder extends RecyclerView.ViewHolder {
 		ImageView imgProduct;
-		TextView tvProductName, tvProductDesc, tvPrice, tvOriginalPrice;
+		TextView tvProductName, tvPrice, tvOrigin, tvHarvestDate;
 
 		public ProductViewHolder(@NonNull View itemView) {
 			super(itemView);
 			imgProduct = itemView.findViewById(R.id.imgProduct);
 			tvProductName = itemView.findViewById(R.id.tvProductName);
-			tvProductDesc = itemView.findViewById(R.id.tvProductDesc);
 			tvPrice = itemView.findViewById(R.id.tvPrice);
-			tvOriginalPrice = itemView.findViewById(R.id.tvOriginalPrice);
+			tvOrigin = itemView.findViewById(R.id.tvOrigin);
+			tvHarvestDate = itemView.findViewById(R.id.tvHarvestDate);
 		}
 	}
 }

@@ -34,6 +34,8 @@
         <activity android:name=".SellerProductsActivity" />
         <activity android:name=".CartActivity" />
         <activity android:name=".CheckoutActivity" />
+        <activity android:name=".CategoryProductsActivity" />
+        <activity android:name=".ProductOriginActivity" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCkunoHxdytkx3fSLgffalBbppSbn2KsEE" />

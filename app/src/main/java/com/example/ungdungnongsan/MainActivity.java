@@ -1,16 +1,23 @@
 package com.example.ungdungnongsan;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import androidx.recyclerview.widget.RecyclerView;
-import	android.graphics.Rect;
-import	android.view.View;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,221 +25,285 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import android.widget.TextView;
-import android.widget.EditText;
-import android.text.TextWatcher;
-import android.text.Editable;
-import android.content.SharedPreferences;
-import android.app.AlertDialog;
-import android.widget.ImageView;
-import android.content.Intent;
-import android.app.AlertDialog;
-public class MainActivity extends AppCompatActivity {
 
-	private RecyclerView rvGroupProducts;
-	private GroupProductAdapter groupProductAdapter;
-	private List<GroupProduct> groupProductList;
-	private RecyclerView rvCategories;
-	private CategoryAdapter categoryAdapter;
-	private List<String> categoryList;
-	private EditText etSearch;
+public class MainActivity extends AppCompatActivity implements CategoryAdapter.OnCategoryClickListener {
 
+    private static final String TAG = "MainActivity";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		// Set up the toolbar
-		findViewById(R.id.ivCart).setOnClickListener(v -> {
-			Intent intent = new Intent(MainActivity.this, CartActivity.class);
-			startActivity(intent);
-		});
-		etSearch = findViewById(R.id.etSearch);
-		ImageView ivUserIcon = findViewById(R.id.ivUserIcon);
-		ivUserIcon.setOnClickListener(v -> {
-			SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
-			String email = prefs.getString("email", "Không có dữ liệu");
-			String name = prefs.getString("name", "Không có dữ liệu");
-			String phone = prefs.getString("phone", "Không có dữ liệu");
-			String address = prefs.getString("address", "Không có dữ liệu");
+    private RecyclerView rvCategories;
+    private RecyclerView rvGroupProducts;
+    private CategoryAdapter categoryAdapter;
+    private GroupProductAdapter groupProductAdapter;
+    private ImageView ivCart, ivUserIcon;
+    private EditText etSearch;
 
-			String message = "Email: " + email + "\n"
-					                 + "Họ tên: " + name + "\n"
-					                 + "SĐT: " + phone + "\n"
-					                 + "Địa chỉ: " + address;
+    private List<String> categories = new ArrayList<>();
+    private List<GroupProduct> allGroupProducts = new ArrayList<>();
+    private List<GroupProduct> filteredGroupProducts = new ArrayList<>();
+    private FirebaseAuth mAuth;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-			builder.setTitle("Thông tin người dùng");
-			builder.setMessage(message);
-			builder.setPositiveButton("OK", null);
-			builder.setNegativeButton("Chỉnh sửa", (dialog, which) -> {
-				startActivity(new android.content.Intent(MainActivity.this, EditProfileActivity.class));
-			});
-			builder.setNeutralButton("Đăng xuất", (dialog, which) -> {
-				SharedPreferences.Editor editor = prefs.edit();
-				editor.clear();
-				editor.apply();
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+        
+        // Check if user is signed in
+        if (mAuth.getCurrentUser() == null) {
+            // Not signed in, redirect to login
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
 
-				Toast.makeText(MainActivity.this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+        // Initialize views and continue with normal flow
+        initViews();
+        setupRecyclerViews();
+        loadCategories();
+        loadAllProducts();
+        setupListeners();
+    }
 
+    // Initialize views from layout
+    private void initViews() {
+        rvCategories = findViewById(R.id.rvCategories);
+        rvGroupProducts = findViewById(R.id.rvGroupProducts);
+        ivCart = findViewById(R.id.ivCart);
+        ivUserIcon = findViewById(R.id.ivUserIcon);
+        etSearch = findViewById(R.id.etSearch);
+    }
 
-				Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa ngăn xếp Activity
-				startActivity(intent);
-				finish();
-			});
-			builder.show();
-		});
+    // Set up RecyclerViews with their adapters
+    private void setupRecyclerViews() {
+        // Categories horizontal list
+        rvCategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        categories = new ArrayList<>();
+        categoryAdapter = new CategoryAdapter(categories, this);
+        rvCategories.setAdapter(categoryAdapter);
 
+        // Group products vertical list
+        rvGroupProducts.setLayoutManager(new LinearLayoutManager(this));
+        allGroupProducts = new ArrayList<>();
+        filteredGroupProducts = new ArrayList<>();
+        groupProductAdapter = new GroupProductAdapter(this, filteredGroupProducts);
+        rvGroupProducts.setAdapter(groupProductAdapter);
+    }
 
-		etSearch.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+    // Set up click listeners and other interactions
+    private void setupListeners() {
+        ivCart.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CartActivity.class);
+            startActivity(intent);
+        });
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				filterProductsByName(s.toString());
-			}
+        ivUserIcon.setOnClickListener(v -> {
+            // Display user information in an alert dialog
+            SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+            String email = prefs.getString("email", "Không có dữ liệu");
+            String name = prefs.getString("name", "Không có dữ liệu");
+            String phone = prefs.getString("phone", "Không có dữ liệu");
+            String address = prefs.getString("address", "Không có dữ liệu");
 
-			@Override
-			public void afterTextChanged(Editable s) {
-			}
-		});
+            String message = "Email: " + email + "\n"
+                    + "Họ tên: " + name + "\n"
+                    + "SĐT: " + phone + "\n"
+                    + "Địa chỉ: " + address;
 
+            new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Thông tin người dùng")
+                    .setMessage(message)
+                    .setPositiveButton("Đóng", null)
+                    .setNegativeButton("Đăng xuất", (dialog, which) -> {
+                        mAuth.signOut();
+                        redirectToLogin();
+                    })
+                    .show();
+        });
 
-		rvCategories = findViewById(R.id.rvCategories);
-		rvCategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        // Search functionality
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-		categoryList = new ArrayList<>();
-		categoryList.add("Tất cả");
-		categoryList.add("Cá");
-		categoryList.add("Rau");
-		categoryList.add("Thịt");
-		categoryList.add("Trái cây");
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-		categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnCategoryClickListener() {
-			@Override
-			public void onCategoryClick(String categoryName) {
-				if (categoryName.equals("Tất cả")) {
-					groupProductAdapter.setData(groupProductList);
-					return;
-				}
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterProducts(s.toString());
+            }
+        });
+    }
 
-				List<GroupProduct> filteredGroups = new ArrayList<>();
-				for (GroupProduct group : groupProductList) {
-					if (group.getGroupName().equalsIgnoreCase(categoryName)) {
-						filteredGroups.add(group);
-						break;
-					}
-				}
-				groupProductAdapter.setData(filteredGroups);
-			}
-		});
+    private void redirectToLogin() {
+        // Safely redirect to login on any critical failure
+        try {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        } catch (Exception e) {
+            Log.e(TAG, "Even redirect to login failed", e);
+            finish(); // Last resort, just close the app
+        }
+    }
 
-		rvCategories.setAdapter(categoryAdapter);
+    // Load categories from Firebase
+    private void loadCategories() {
+        categories.clear();
+        
+        // Always add "Tất cả" (All) as the first category
+        categories.add("Tất cả");
+        
+        // Then add other categories
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("products");
+                
+        categoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                    String categoryName = categorySnapshot.getKey();
+                    if (categoryName != null && !categoryName.equals("Tất cả")) {
+                        categories.add(categoryName);
+                    }
+                }
+                
+                categoryAdapter.notifyDataSetChanged();
+                
+                // After loading categories, we can set category counts
+                if (allGroupProducts.size() > 0) {
+                    categoryAdapter.setCategoryCounts(allGroupProducts);
+                }
+            }
 
-		rvGroupProducts = findViewById(R.id.rvGroupProducts);
-		rvGroupProducts.setLayoutManager(new LinearLayoutManager(this));
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "Error loading categories: " + databaseError.getMessage());
+                Toast.makeText(MainActivity.this, "Lỗi tải danh mục", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-		int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.group_spacing);
-		rvGroupProducts.addItemDecoration(new RecyclerView.ItemDecoration() {
-			@Override
-			public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-				outRect.bottom = spacingInPixels;
-			}
-		});
+    // Load all product data
+    private void loadAllProducts() {
+        DatabaseReference productsRef = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("products");
+                
+        productsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                allGroupProducts.clear();
+                
+                for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                    String categoryName = categorySnapshot.getKey();
+                    List<Product> products = new ArrayList<>();
+                    
+                    for (DataSnapshot productSnapshot : categorySnapshot.getChildren()) {
+                        Product product = new Product();
+                        product.setKey(productSnapshot.getKey());
+                        product.setCategory(categoryName);
+                        product.setName(productSnapshot.child("name").getValue(String.class));
+                        product.setImageUrl(productSnapshot.child("imageUrl").getValue(String.class));
+                        product.setPrice(productSnapshot.child("price").getValue(String.class));
+                        product.setDescription(productSnapshot.child("description").getValue(String.class));
+                        product.setOrigin(productSnapshot.child("origin").getValue(String.class));
+                        product.setIngredients(productSnapshot.child("ingredients").getValue(String.class));
+                        product.setIdSeller(productSnapshot.child("idSeller").getValue(String.class));
+                        
+                        products.add(product);
+                    }
+                    
+                    if (!products.isEmpty()) {
+                        allGroupProducts.add(new GroupProduct(categoryName, products));
+                    }
+                }
+                
+                // Initially show all products
+                filterByCategory("Tất cả");
+                
+                // Update category counts
+                categoryAdapter.setCategoryCounts(allGroupProducts);
+            }
 
-		groupProductList = new ArrayList<>();
-		groupProductAdapter = new GroupProductAdapter(this, groupProductList);
-		rvGroupProducts.setAdapter(groupProductAdapter);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "Error loading products: " + databaseError.getMessage());
+                Toast.makeText(MainActivity.this, "Lỗi tải dữ liệu sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-		fetchDataFromFirebase();
-	}
+    // Filter products based on search text
+    private void filterProducts(String query) {
+        // First apply category filter
+        String selectedCategory = categories.get(categoryAdapter.getSelectedPosition());
+        
+        // Then apply search filter
+        if (query.isEmpty()) {
+            // If no search query, just filter by category
+            filterByCategory(selectedCategory);
+        } else {
+            // Filter by both category and search query
+            filteredGroupProducts.clear();
+            
+            for (GroupProduct group : allGroupProducts) {
+                // Skip if not in selected category and not "All"
+                if (!selectedCategory.equals("Tất cả") && !group.getGroupName().equals(selectedCategory)) {
+                    continue;
+                }
+                
+                // Filter products in this group by search query
+                List<Product> matchedProducts = new ArrayList<>();
+                for (Product product : group.getProducts()) {
+                    if (product.getName().toLowerCase().contains(query.toLowerCase())) {
+                        matchedProducts.add(product);
+                    }
+                }
+                
+                // Add group if it has matching products
+                if (!matchedProducts.isEmpty()) {
+                    filteredGroupProducts.add(new GroupProduct(group.getGroupName(), matchedProducts));
+                }
+            }
+            
+            groupProductAdapter.setData(filteredGroupProducts);
+        }
+    }
 
+    // Filter products based on selected category
+    private void filterByCategory(String categoryName) {
+        filteredGroupProducts.clear();
+        
+        if (categoryName.equals("Tất cả")) {
+            // Show all groups
+            filteredGroupProducts.addAll(allGroupProducts);
+        } else {
+            // Show only the selected category
+            for (GroupProduct group : allGroupProducts) {
+                if (group.getGroupName().equals(categoryName)) {
+                    filteredGroupProducts.add(group);
+                    break;
+                }
+            }
+        }
+        
+        groupProductAdapter.setData(filteredGroupProducts);
+    }
 
-	private void fetchDataFromFirebase() {
-		DatabaseReference rootRef = FirebaseDatabase.getInstance("https://quanlynongsan-d0391-default-rtdb.asia-southeast1.firebasedatabase.app")
-				                            .getReference("products");
-
-		Log.d("MainActivity", "Bắt đầu tải dữ liệu từ Firebase");
-
-		rootRef.addValueEventListener(new ValueEventListener() {
-			@Override
-			public void onDataChange(@NonNull DataSnapshot snapshot) {
-				Log.d("MainActivity", "Đã nhận dữ liệu: " + snapshot.getChildrenCount() + " nhóm");
-				groupProductList.clear();
-
-				for (DataSnapshot groupSnapshot : snapshot.getChildren()) {
-					String groupName = groupSnapshot.getKey();
-					List<Product> productList = new ArrayList<>();
-
-					Log.d("MainActivity", "Đang xử lý nhóm: " + groupName);
-
-					for (DataSnapshot idSnapshot : groupSnapshot.getChildren()) {
-						String imageUrl = idSnapshot.child("imageUrl").getValue(String.class);
-						String name = idSnapshot.child("name").getValue(String.class);
-						String price = idSnapshot.child("price").getValue(String.class);
-						String description = idSnapshot.child("description").getValue(String.class);
-						String origin = idSnapshot.child("origin").getValue(String.class);
-						String ingredients = idSnapshot.child("ingredients").getValue(String.class);
-
-						if (name != null && imageUrl != null && price != null) {
-							Product product = new Product(name, imageUrl, price, description, origin, ingredients);
-							product.setKey(idSnapshot.getKey());
-							product.setCategory(groupName);
-							productList.add(product);
-							Log.d("MainActivity", "Đã thêm sản phẩm: " + name);
-						} else {
-							Log.e("MainActivity", "Thiếu thông tin sản phẩm cho " + idSnapshot.getKey());
-						}
-					}
-
-					groupProductList.add(new GroupProduct(groupName, productList));
-				}
-
-				groupProductAdapter.setData(groupProductList);
-				Log.d("MainActivity", "Cập nhật adapter với " + groupProductList.size() + " nhóm");
-			}
-
-
-
-
-	@Override
-			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e("MainActivity", "Lỗi Firebase: " + error.getMessage());
-				Toast.makeText(MainActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-		});
-
-	}
-
-	private void filterProductsByName(String keyword) {
-		if (keyword.isEmpty()) {
-			groupProductAdapter.setData(groupProductList);
-			return;
-		}
-
-		List<GroupProduct> filteredGroups = new ArrayList<>();
-
-		for (GroupProduct group : groupProductList) {
-			List<Product> matchedProducts = new ArrayList<>();
-			for (Product product : group.getProducts()) {
-				if (product.getName().toLowerCase().contains(keyword.toLowerCase())) {
-					matchedProducts.add(product);
-				}
-			}
-			if (!matchedProducts.isEmpty()) {
-				filteredGroups.add(new GroupProduct(group.getGroupName(), matchedProducts));
-			}
-		}
-
-		groupProductAdapter.setData(filteredGroups);
-	}
+    // Implementation of CategoryAdapter.OnCategoryClickListener interface
+    @Override
+    public void onCategoryClick(String categoryName) {
+        // Filter products based on selected category
+        filterByCategory(categoryName);
+        
+        // Also reset search to avoid confusion
+        etSearch.setText("");
+    }
 }
-
-

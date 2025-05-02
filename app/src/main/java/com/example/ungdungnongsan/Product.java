@@ -12,6 +12,7 @@ public class Product implements Serializable  {
 	private String key;
 	private String category;
 	private String idSeller;
+	private Certificate certificate;
 
 	public Product() {}
 
@@ -93,4 +94,11 @@ public class Product implements Serializable  {
 	public String getName() { return name; }
 	public String getImageUrl() { return imageUrl; }
 	public String getPrice() { return price; }
+	public Certificate getCertificate() {
+		return certificate;
+	}
+
+	public void setCertificate(Certificate certificate) {
+		this.certificate = certificate;
+	}
 }
